@@ -31,5 +31,3 @@ dist-ssr
 *.sln
 *.sw?
 
-# Secrets locaux
-.env
