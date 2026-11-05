@@ -9,6 +9,7 @@ type Table<Row, Insert, Update = Partial<Insert>> = {
 };
 
 export type SeoProject = {
+  gsc_site: string | null;
   id: string;
   user_id: string;
   name: string;
@@ -68,6 +69,14 @@ export type SeoKeyword = {
   created_at: string;
 };
 
+export type SeoGoogleConnection = { user_id: string; refresh_token: string; created_at: string };
+export type SeoOauthState = {
+  nonce: string;
+  user_id: string;
+  project_id: string;
+  created_at: string;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -79,6 +88,14 @@ export type Database = {
       seo_audit_pages: Table<
         SeoAuditPage,
         Pick<SeoAuditPage, "audit_id" | "user_id" | "url"> & Partial<SeoAuditPage>
+      >;
+      seo_google_connections: Table<
+        SeoGoogleConnection,
+        Pick<SeoGoogleConnection, "user_id" | "refresh_token">
+      >;
+      seo_oauth_states: Table<
+        SeoOauthState,
+        Pick<SeoOauthState, "nonce" | "user_id" | "project_id">
       >;
       seo_keywords: Table<
         SeoKeyword,

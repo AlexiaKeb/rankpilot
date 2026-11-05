@@ -13,6 +13,7 @@ import {
 } from "recharts";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
+import { GscPanel } from "@/components/GscPanel";
 import { ScoreRing } from "@/components/ScoreRing";
 import { supabase } from "@/integrations/supabase/client";
 import { crawlStep, startAudit } from "@/lib/seo/audit.functions";
@@ -65,6 +66,11 @@ function ProjectPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [q, setQ] = useState("");
   const [summary, setSummary] = useState("");
+  const [view, setView] = useState<"audit" | "gsc">(
+    typeof window !== "undefined" && new URLSearchParams(window.location.search).has("gsc")
+      ? "gsc"
+      : "audit",
+  );
 
   const project = useQuery({
     queryKey: ["seo_project", projectId],
@@ -272,7 +278,28 @@ function ProjectPage() {
         </div>
       </div>
 
-      {progress && (
+      <div className="mb-6 flex gap-2">
+        {(
+          [
+            ["audit", "Audit technique"],
+            ["gsc", "Search Console"],
+          ] as const
+        ).map(([k, l]) => (
+          <button
+            key={k}
+            onClick={() => setView(k)}
+            className={`rounded-md border px-4 py-2 text-sm font-medium ${view === k ? "bg-foreground text-background" : "bg-card hover:bg-accent"}`}
+          >
+            {l}
+          </button>
+        ))}
+      </div>
+
+      {view === "gsc" && project.data && (
+        <GscPanel projectId={projectId} gscSite={project.data.gsc_site} />
+      )}
+
+      {view === "audit" && progress && (
         <div className="mb-6 rounded-lg border bg-card p-4">
           <div className="font-data mb-2 text-xs text-muted-foreground">
             {progress.crawled} / {progress.discovered} pages
@@ -288,7 +315,7 @@ function ProjectPage() {
         </div>
       )}
 
-      {done && audit && (
+      {view === "audit" && done && audit && (
         <>
           <div className="mb-6 grid gap-4 lg:grid-cols-[auto_1fr]">
             <div className="flex items-center justify-center rounded-lg border bg-card p-6">
@@ -636,12 +663,12 @@ function ProjectPage() {
         </>
       )}
 
-      {audit && audit.status !== "completed" && !run.isPending && (
+      {view === "audit" && audit && audit.status !== "completed" && !run.isPending && (
         <p className="rounded-lg border border-dashed p-8 text-center text-muted-foreground">
           Le dernier audit n'a pas abouti. Relancez-le.
         </p>
       )}
-      {!audit && !run.isPending && audits.isSuccess && (
+      {view === "audit" && !audit && !run.isPending && audits.isSuccess && (
         <p className="rounded-lg border border-dashed p-10 text-center text-muted-foreground">
           Aucun audit pour l'instant. Lancez-en un pour obtenir votre score de santé.
         </p>

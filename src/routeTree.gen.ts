@@ -18,6 +18,7 @@ import { Route as AuthenticatedKeywordsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedOptimizerRouteImport } from './routes/_authenticated/optimizer'
 import { Route as AuthenticatedProjectsIndexRouteImport } from './routes/_authenticated/projects/index'
 import { Route as AuthenticatedProjectsProjectIdRouteImport } from './routes/_authenticated/projects/$projectId'
+import { Route as ApiGscCallbackRouteImport } from './routes/api/gsc/callback'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -66,6 +67,11 @@ const AuthenticatedProjectsProjectIdRoute =
     path: '/projects/$projectId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiGscCallbackRoute = ApiGscCallbackRouteImport.update({
+  id: '/api/gsc/callback',
+  path: '/api/gsc/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/keywords': typeof AuthenticatedKeywordsRoute
   '/optimizer': typeof AuthenticatedOptimizerRoute
   '/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
+  '/api/gsc/callback': typeof ApiGscCallbackRoute
   '/projects/': typeof AuthenticatedProjectsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -85,6 +92,7 @@ export interface FileRoutesByTo {
   '/keywords': typeof AuthenticatedKeywordsRoute
   '/optimizer': typeof AuthenticatedOptimizerRoute
   '/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
+  '/api/gsc/callback': typeof ApiGscCallbackRoute
   '/projects': typeof AuthenticatedProjectsIndexRoute
 }
 export interface FileRoutesById {
@@ -97,6 +105,7 @@ export interface FileRoutesById {
   '/_authenticated/keywords': typeof AuthenticatedKeywordsRoute
   '/_authenticated/optimizer': typeof AuthenticatedOptimizerRoute
   '/_authenticated/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
+  '/api/gsc/callback': typeof ApiGscCallbackRoute
   '/_authenticated/projects/': typeof AuthenticatedProjectsIndexRoute
 }
 export interface FileRouteTypes {
@@ -109,6 +118,7 @@ export interface FileRouteTypes {
     | '/keywords'
     | '/optimizer'
     | '/projects/$projectId'
+    | '/api/gsc/callback'
     | '/projects/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -119,6 +129,7 @@ export interface FileRouteTypes {
     | '/keywords'
     | '/optimizer'
     | '/projects/$projectId'
+    | '/api/gsc/callback'
     | '/projects'
   id:
     | '__root__'
@@ -130,6 +141,7 @@ export interface FileRouteTypes {
     | '/_authenticated/keywords'
     | '/_authenticated/optimizer'
     | '/_authenticated/projects/$projectId'
+    | '/api/gsc/callback'
     | '/_authenticated/projects/'
   fileRoutesById: FileRoutesById
 }
@@ -138,6 +150,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   OutilsRoute: typeof OutilsRoute
+  ApiGscCallbackRoute: typeof ApiGscCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -205,6 +218,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProjectsProjectIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/gsc/callback': {
+      id: '/api/gsc/callback'
+      path: '/api/gsc/callback'
+      fullPath: '/api/gsc/callback'
+      preLoaderRoute: typeof ApiGscCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -232,6 +252,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   OutilsRoute: OutilsRoute,
+  ApiGscCallbackRoute: ApiGscCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
