@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { FolderKanban, LogOut, ScanSearch, TextSearch, Wrench } from "lucide-react";
+import { Activity, FolderKanban, LogOut, ScanSearch, TextSearch, Wrench } from "lucide-react";
 import type { ReactNode } from "react";
 import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,7 +8,8 @@ const NAV = [
   { to: "/projects", label: "Projets", icon: FolderKanban },
   { to: "/optimizer", label: "Optimiseur de page", icon: ScanSearch },
   { to: "/keywords", label: "Mots-clés", icon: TextSearch },
-  { to: "/outils", label: "Outils", icon: Wrench },
+  { to: "/diagnostics", label: "Diagnostics", icon: Activity },
+  { to: "/outils", label: "Outils gratuits", icon: Wrench },
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {

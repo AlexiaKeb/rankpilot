@@ -98,3 +98,67 @@ export async function fetchText(url: string): Promise<{ status: number; text: st
     return { status: 0, text: "" };
   }
 }
+
+export interface Hop {
+  url: string;
+  status: number;
+  location?: string;
+  ms: number;
+}
+export interface Trace {
+  hops: Hop[];
+  final: { url: string; status: number; headers: Record<string, string>; ms: number } | null;
+  error?: string;
+}
+
+const HEADERS_OF_INTEREST = [
+  "content-type",
+  "cache-control",
+  "x-robots-tag",
+  "strict-transport-security",
+  "content-encoding",
+  "server",
+  "x-frame-options",
+  "content-security-policy",
+  "link",
+  "last-modified",
+  "etag",
+];
+
+/** Suit les redirections une par une et relève les en-têtes utiles au SEO. */
+export async function traceUrl(start: string): Promise<Trace> {
+  const hops: Hop[] = [];
+  let current = start;
+  for (let i = 0; i < 10; i++) {
+    const u = new URL(current);
+    if (!isSafePublicHost(u.hostname))
+      return { hops, final: null, error: "Adresse non autorisée." };
+    const t0 = Date.now();
+    let res: Response;
+    try {
+      res = await fetch(current, {
+        redirect: "manual",
+        headers: { "user-agent": UA },
+        signal: AbortSignal.timeout(10_000),
+      });
+    } catch {
+      return { hops, final: null, error: "Site injoignable (délai dépassé ou connexion refusée)." };
+    }
+    res.body?.cancel().catch(() => {});
+    const ms = Date.now() - t0;
+    const loc = res.headers.get("location");
+    if (res.status >= 300 && res.status < 400 && loc) {
+      const next = new URL(loc, current).toString();
+      hops.push({ url: current, status: res.status, location: next, ms });
+      current = next;
+      continue;
+    }
+    const headers: Record<string, string> = {};
+    for (const h of HEADERS_OF_INTEREST) {
+      const v = res.headers.get(h);
+      if (v) headers[h] = v.slice(0, 300);
+    }
+    return { hops, final: { url: current, status: res.status, headers, ms } };
+  }
+  return { hops, final: null, error: "Trop de redirections (boucle probable)." };
+}

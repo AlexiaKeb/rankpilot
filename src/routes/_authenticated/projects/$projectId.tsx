@@ -17,6 +17,8 @@ import { ScoreRing } from "@/components/ScoreRing";
 import { supabase } from "@/integrations/supabase/client";
 import { crawlStep, startAudit } from "@/lib/seo/audit.functions";
 import { RULES, type Severity } from "@/lib/seo/rules";
+import { buildLlmsTxt } from "@/lib/seo/ai";
+import { suggestInternalLinks } from "@/lib/seo/linking";
 
 export const Route = createFileRoute("/_authenticated/projects/$projectId")({
   head: () => ({ meta: [{ title: "Audit SEO — RankPilot" }] }),
@@ -50,7 +52,7 @@ function Stat({ label, value, hint }: { label: string; value: number | string; h
   );
 }
 
-type Tab = "plan" | "pages" | "history";
+type Tab = "plan" | "pages" | "links" | "llms" | "history";
 
 function ProjectPage() {
   const { projectId } = Route.useParams();
@@ -62,6 +64,7 @@ function ProjectPage() {
   const [maxPages, setMaxPages] = useState(50);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [q, setQ] = useState("");
+  const [summary, setSummary] = useState("");
 
   const project = useQuery({
     queryKey: ["seo_project", projectId],
@@ -107,19 +110,49 @@ function ProjectPage() {
       ).data ?? [],
   });
   const pages = useQuery({
-    enabled: done && tab === "pages",
+    enabled: done && (tab === "pages" || tab === "links" || tab === "llms"),
     queryKey: ["seo_pages", audit?.id],
     queryFn: async () =>
       (
         await supabase
           .from("seo_audit_pages")
-          .select("id,url,status_code,title,word_count,depth,response_ms,noindex")
+          .select(
+            "id,url,status_code,title,meta_description,word_count,depth,response_ms,noindex,internal_links,data",
+          )
           .eq("audit_id", audit!.id)
           .eq("crawled", true)
           .order("url")
           .limit(1000)
       ).data ?? [],
   });
+
+  const origin = project.data ? `https://${project.data.domain}` : "";
+  const linkIdeas = useMemo(
+    () =>
+      suggestInternalLinks(
+        (pages.data ?? []).map((p) => ({
+          url: p.url,
+          title: p.title,
+          h1: ((p.data as { h1?: string[] })?.h1 ?? [])[0],
+          internalLinks: (p.internal_links as string[]) ?? [],
+          status: p.status_code ?? 0,
+          noindex: p.noindex,
+        })),
+        origin,
+      ),
+    [pages.data, origin],
+  );
+  const llmsText = useMemo(
+    () =>
+      buildLlmsTxt(
+        { name: project.data?.name ?? "", summary },
+        (pages.data ?? [])
+          .filter((p) => p.status_code === 200 && !p.noindex)
+          .sort((a, b) => a.depth - b.depth)
+          .map((p) => ({ url: p.url, title: p.title, description: p.meta_description })),
+      ),
+    [pages.data, project.data, summary],
+  );
 
   const diff = useMemo(() => {
     if (!issues.data || !prevIssues.data) return null;
@@ -281,6 +314,8 @@ function ProjectPage() {
               [
                 ["plan", "Plan d'action"],
                 ["pages", "Pages"],
+                ["links", "Maillage"],
+                ["llms", "llms.txt"],
                 ["history", "Historique"],
               ] as const
             ).map(([k, l]) => (
@@ -442,6 +477,93 @@ function ProjectPage() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            </>
+          )}
+
+          {tab === "links" && (
+            <>
+              <p className="mb-4 text-sm text-muted-foreground">
+                Pages peu liées de votre site, avec les pages proches par le sujet qui devraient
+                pointer vers elles. Ajoutez le lien dans le texte, avec une ancre descriptive.
+              </p>
+              {pages.isLoading && <p className="text-muted-foreground">Analyse…</p>}
+              {pages.isSuccess && linkIdeas.length === 0 && (
+                <p className="rounded-lg border bg-card p-6 text-success">
+                  Aucune page n'est sous-liée.
+                </p>
+              )}
+              <div className="space-y-3">
+                {linkIdeas.slice(0, 30).map((s) => (
+                  <div key={s.target.url} className="rounded-lg border bg-card p-4 text-sm">
+                    <div className="mb-2">
+                      <span className="font-data mr-2 rounded bg-secondary px-2 py-0.5 text-xs">
+                        {s.inbound} lien(s) entrant(s)
+                      </span>
+                      <span className="font-medium">{s.target.title}</span>
+                    </div>
+                    <div className="font-data mb-2 break-all text-xs text-muted-foreground">
+                      {s.target.url}
+                    </div>
+                    <ul className="space-y-1">
+                      {s.from.map((f) => (
+                        <li key={f.url} className="flex gap-2">
+                          <span className="text-primary">←</span>
+                          <span className="min-w-0 break-all">
+                            {f.title}{" "}
+                            <span className="font-data text-xs text-muted-foreground">
+                              ({f.url.replace(/^https?:\/\/[^/]+/, "") || "/"})
+                            </span>
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {tab === "llms" && (
+            <>
+              <p className="mb-4 text-sm text-muted-foreground">
+                Le fichier <code>llms.txt</code>, placé à la racine de votre site, résume vos pages
+                clés pour les moteurs de réponse IA. Générez-le depuis l'audit, relisez-le, puis
+                publiez-le sur <code>/llms.txt</code>. Son impact sur les classements n'est pas
+                garanti : c'est une bonne pratique en cours d'adoption.
+              </p>
+              <input
+                value={summary}
+                onChange={(e) => setSummary(e.target.value)}
+                placeholder="Résumé du site en une ou deux phrases"
+                className="mb-3 w-full rounded-md border bg-card px-3 py-2 text-sm"
+              />
+              <pre className="font-data mb-3 max-h-96 overflow-auto rounded-lg border bg-card p-4 text-xs">
+                {llmsText}
+              </pre>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(llmsText);
+                    toast.success("Copié");
+                  }}
+                  className="rounded-md border px-3 py-2 text-sm hover:bg-accent"
+                >
+                  Copier
+                </button>
+                <button
+                  onClick={() => {
+                    const a = document.createElement("a");
+                    a.href = URL.createObjectURL(
+                      new Blob([llmsText], { type: "text/plain;charset=utf-8" }),
+                    );
+                    a.download = "llms.txt";
+                    a.click();
+                  }}
+                  className="flex items-center gap-1 rounded-md border px-3 py-2 text-sm hover:bg-accent"
+                >
+                  <Download className="h-4 w-4" /> Télécharger
+                </button>
               </div>
             </>
           )}
