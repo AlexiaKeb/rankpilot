@@ -3,6 +3,12 @@
 SaaS SEO : audit technique, score de santé et plan d'action priorisé.
 Stack : TanStack Start (React 19), Tailwind 4, shadcn/ui, Supabase (RLS), déploiement Cloudflare Workers.
 
+## Fonctionnalités
+- Audit technique, historique, comparaison, export CSV, maillage interne, llms.txt
+- Optimiseur de page par mot-clé, idées de mots-clés, outils gratuits (aperçu Google, JSON-LD)
+- Diagnostics : vitesse (Core Web Vitals), redirections et en-têtes, visibilité IA
+- Google Search Console : clics, impressions, opportunités (nécessite GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET)
+
 ## Phase 1 (livrée)
 
 - Auth email/mot de passe, projets (domaines), RLS sur toutes les tables.
