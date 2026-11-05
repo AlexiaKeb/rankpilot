@@ -57,6 +57,17 @@ export type SeoAuditIssue = {
   detail: string | null;
 };
 
+export type SeoKeyword = {
+  id: string;
+  user_id: string;
+  project_id: string | null;
+  keyword: string;
+  intent: string;
+  cluster: string | null;
+  notes: string | null;
+  created_at: string;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -68,6 +79,10 @@ export type Database = {
       seo_audit_pages: Table<
         SeoAuditPage,
         Pick<SeoAuditPage, "audit_id" | "user_id" | "url"> & Partial<SeoAuditPage>
+      >;
+      seo_keywords: Table<
+        SeoKeyword,
+        Pick<SeoKeyword, "user_id" | "keyword"> & Partial<SeoKeyword>
       >;
       seo_audit_issues: Table<
         SeoAuditIssue,
