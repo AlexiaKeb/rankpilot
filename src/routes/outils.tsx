@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, Copy } from "lucide-react";
+import { AppShell } from "@/components/AppShell";
 import { Logo } from "@/components/Logo";
+import { supabase } from "@/integrations/supabase/client";
 import { SerpPreview } from "@/components/SerpPreview";
 import { SCHEMA_FIELDS, jsonLdScript, type SchemaType } from "@/lib/seo/jsonld";
 
@@ -129,6 +131,40 @@ function JsonLdTool() {
 
 function Tools() {
   const [tab, setTab] = useState<"serp" | "jsonld">("serp");
+  const [authed, setAuthed] = useState(false);
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setAuthed(!!data.session));
+  }, []);
+
+  const body = (
+    <>
+      <p className="font-data mb-2 text-xs uppercase tracking-[0.2em] text-primary">Gratuit</p>
+      <h1 className="font-display text-4xl font-extrabold">Outils SEO</h1>
+      <div className="my-6 flex gap-2">
+        {(
+          [
+            ["serp", "Aperçu Google"],
+            ["jsonld", "Générateur JSON-LD"],
+          ] as const
+        ).map(([k, l]) => (
+          <button
+            key={k}
+            onClick={() => setTab(k)}
+            className={`rounded-md border px-4 py-2 text-sm ${tab === k ? "bg-primary text-primary-foreground" : "bg-card hover:bg-accent"}`}
+          >
+            {l}
+          </button>
+        ))}
+      </div>
+      <div className="rounded-xl border bg-card p-6">
+        {tab === "serp" ? <SerpTool /> : <JsonLdTool />}
+      </div>
+    </>
+  );
+
+  // Connecté : même coque que le reste de l'application (menu latéral, déconnexion).
+  if (authed) return <AppShell>{body}</AppShell>;
+
   return (
     <div className="bg-grid min-h-screen">
       <header className="mx-auto flex max-w-5xl items-center justify-between px-6 py-6">
@@ -142,29 +178,7 @@ function Tools() {
           Se connecter
         </Link>
       </header>
-      <main className="mx-auto max-w-5xl px-6 pb-16">
-        <p className="font-data mb-2 text-xs uppercase tracking-[0.2em] text-primary">Gratuit</p>
-        <h1 className="font-display text-4xl font-extrabold">Outils SEO</h1>
-        <div className="my-6 flex gap-2">
-          {(
-            [
-              ["serp", "Aperçu Google"],
-              ["jsonld", "Générateur JSON-LD"],
-            ] as const
-          ).map(([k, l]) => (
-            <button
-              key={k}
-              onClick={() => setTab(k)}
-              className={`rounded-md border px-4 py-2 text-sm ${tab === k ? "bg-primary text-primary-foreground" : "bg-card hover:bg-accent"}`}
-            >
-              {l}
-            </button>
-          ))}
-        </div>
-        <div className="rounded-xl border bg-card p-6">
-          {tab === "serp" ? <SerpTool /> : <JsonLdTool />}
-        </div>
-      </main>
+      <main className="mx-auto max-w-5xl px-6 pb-16">{body}</main>
     </div>
   );
 }
