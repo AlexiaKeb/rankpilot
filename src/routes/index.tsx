@@ -55,7 +55,10 @@ function Landing() {
             </p>
             <h1 className="font-display text-5xl font-extrabold leading-[1.02] md:text-7xl">
               Voyez ce que Google voit.
-              <span className="block text-primary">Corrigez ce qui bloque.</span>
+              <span className="relative isolate mt-1 inline-block text-primary">
+                <span className="absolute inset-x-0 bottom-1 -z-10 h-4 bg-highlight/70" />
+                Corrigez ce qui bloque.
+              </span>
             </h1>
             <p className="mt-6 max-w-xl text-lg text-muted-foreground">
               RankPilot explore votre site comme un moteur de recherche et transforme chaque défaut
@@ -69,7 +72,7 @@ function Landing() {
             </Link>
           </div>
 
-          <div className="rounded-xl border bg-card p-6 shadow-[0_0_60px_-20px_rgb(198_244_50/0.25)]">
+          <div className="rounded-xl border bg-card p-6 shadow-[0_20px_50px_-24px_rgb(22_35_27/0.25)]">
             <div className="flex items-center gap-6">
               <ScoreRing score={74} size={140} />
               <div>

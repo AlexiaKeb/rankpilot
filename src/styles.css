@@ -15,7 +15,7 @@
 
 /*
  * RankPilot — "Radar" design system.
- * Encre sombre (vert-noir), signal citron, typographie éditoriale. Pensé pour les données.
+ * Papier chaud, encre verte, surlignage citron, typographie éditoriale. Pensé pour les données.
  */
 
 @theme inline {
@@ -45,6 +45,7 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-highlight: var(--highlight);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-success: var(--success);
@@ -62,39 +63,41 @@
 :root {
   --radius: 0.5rem;
 
-  --background: #0a0e0d;
-  --foreground: #e8efe9;
-  --surface: #101614;
-  --surface-2: #161e1b;
+  /* Papier chaud + encre verte : clair, aéré, sans noir envahissant */
+  --background: #f6f4ec;
+  --foreground: #16231b;
+  --surface: #fbfaf5;
+  --surface-2: #efece1;
 
-  --card: #101614;
-  --card-foreground: #e8efe9;
-  --popover: #101614;
-  --popover-foreground: #e8efe9;
+  --card: #ffffff;
+  --card-foreground: #16231b;
+  --popover: #ffffff;
+  --popover-foreground: #16231b;
 
-  --primary: #c6f432;
-  --primary-foreground: #0a0e0d;
-  --secondary: #1a2420;
-  --secondary-foreground: #e8efe9;
+  --primary: #1f6b45;
+  --primary-foreground: #ffffff;
+  --secondary: #ece9dd;
+  --secondary-foreground: #16231b;
 
-  --muted: #161e1b;
-  --muted-foreground: #8a9a92;
-  --accent: #1f2b26;
-  --accent-foreground: #e8efe9;
+  --muted: #efece1;
+  --muted-foreground: #5f6d64;
+  --accent: #e6efd0;
+  --accent-foreground: #16231b;
+  --highlight: #c6f432;
 
-  --success: #3ddc97;
-  --success-foreground: #0a0e0d;
-  --warning: #ffb547;
-  --warning-foreground: #0a0e0d;
-  --danger: #ff5c5c;
-  --danger-foreground: #0a0e0d;
-  --destructive: #ff5c5c;
-  --destructive-foreground: #0a0e0d;
+  --success: #17924f;
+  --success-foreground: #ffffff;
+  --warning: #d98a0b;
+  --warning-foreground: #ffffff;
+  --danger: #d93a3a;
+  --danger-foreground: #ffffff;
+  --destructive: #d93a3a;
+  --destructive-foreground: #ffffff;
 
-  --border: #24312c;
-  --border-strong: #35453e;
-  --input: #24312c;
-  --ring: #c6f432;
+  --border: #e1ddcc;
+  --border-strong: #c9c4ae;
+  --input: #d5d0ba;
+  --ring: #1f6b45;
 }
 
 @layer base {
@@ -107,7 +110,7 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
-    color-scheme: dark;
+    color-scheme: light;
   }
   h1,
   h2,
@@ -133,8 +136,8 @@
 /* Quadrillage discret façon écran radar */
 @utility bg-grid {
   background-image:
-    linear-gradient(to right, rgb(198 244 50 / 0.045) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(198 244 50 / 0.045) 1px, transparent 1px);
+    linear-gradient(to right, rgb(31 107 69 / 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(31 107 69 / 0.06) 1px, transparent 1px);
   background-size: 44px 44px;
 }
 
