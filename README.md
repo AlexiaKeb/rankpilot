@@ -15,7 +15,7 @@ Stack : TanStack Start (React 19), Tailwind 4, shadcn/ui, Supabase (RLS), déplo
 ```bash
 npm install
 cp .env.example .env   # renseigner les clés Supabase
-# appliquer supabase/migrations/*.sql sur votre projet Supabase
+# la migration supabase/migrations/*.sql est déjà appliquée au projet « rankpilot »
 npm run dev
 npm test
 ```
