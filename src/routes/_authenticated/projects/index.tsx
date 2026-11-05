@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Globe, Loader2, LogOut, Plus } from "lucide-react";
+import { Globe, Loader2, Plus } from "lucide-react";
 import { toast } from "sonner";
+import { AppShell } from "@/components/AppShell";
 import { supabase } from "@/integrations/supabase/client";
 import { createProject } from "@/lib/seo/audit.functions";
 
@@ -38,15 +39,12 @@ function Projects() {
   });
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-10">
-      <div className="mb-8 flex items-center justify-between">
-        <h1 className="font-display text-3xl font-bold">Mes projets</h1>
-        <button
-          onClick={() => supabase.auth.signOut().then(() => (window.location.href = "/"))}
-          className="flex items-center gap-2 text-sm text-muted-foreground"
-        >
-          <LogOut className="h-4 w-4" /> Déconnexion
-        </button>
+    <AppShell>
+      <div className="mb-8">
+        <p className="font-data mb-2 text-xs uppercase tracking-[0.2em] text-primary">
+          Espace de travail
+        </p>
+        <h1 className="font-display text-4xl font-extrabold">Mes projets</h1>
       </div>
       <form
         onSubmit={(e) => {
@@ -56,21 +54,21 @@ function Projects() {
         className="mb-8 flex flex-col gap-3 rounded-xl border bg-card p-4 sm:flex-row"
       >
         <input
-          className="flex-1 rounded-lg border bg-background px-3 py-2"
+          className="flex-1 rounded-md border bg-background px-3 py-2"
           placeholder="Nom (optionnel)"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
         <input
           required
-          className="flex-1 rounded-lg border bg-background px-3 py-2"
+          className="flex-1 rounded-md border bg-background px-3 py-2"
           placeholder="exemple.com"
           value={domain}
           onChange={(e) => setDomain(e.target.value)}
         />
         <button
           disabled={add.isPending}
-          className="flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground disabled:opacity-60"
+          className="flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 font-medium text-primary-foreground disabled:opacity-60"
         >
           {add.isPending ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -92,7 +90,7 @@ function Projects() {
             key={p.id}
             to="/projects/$projectId"
             params={{ projectId: p.id }}
-            className="flex items-center gap-3 rounded-xl border bg-card p-4 transition hover:border-primary"
+            className="flex items-center gap-3 rounded-lg border bg-card p-4 transition hover:border-primary"
           >
             <Globe className="h-5 w-5 text-primary" />
             <div>
@@ -102,6 +100,6 @@ function Projects() {
           </Link>
         ))}
       </div>
-    </div>
+    </AppShell>
   );
 }

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
+import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/auth")({
@@ -56,13 +57,14 @@ function AuthPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <form onSubmit={submit} className="w-full max-w-sm space-y-4 rounded-2xl border bg-card p-8">
+    <div className="bg-grid flex min-h-screen items-center justify-center px-4">
+      <form onSubmit={submit} className="w-full max-w-sm space-y-4 rounded-xl border bg-card p-8">
+        <Logo className="mb-2" />
         <h1 className="font-display text-2xl font-bold">
           {mode === "signin" ? "Connexion" : "Créer un compte"}
         </h1>
         <input
-          className="w-full rounded-lg border bg-background px-3 py-2"
+          className="w-full rounded-md border bg-background placeholder:text-muted-foreground focus:border-primary focus:outline-none px-3 py-2"
           type="email"
           placeholder="Email"
           autoComplete="email"
@@ -70,7 +72,7 @@ function AuthPage() {
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
         <input
-          className="w-full rounded-lg border bg-background px-3 py-2"
+          className="w-full rounded-md border bg-background placeholder:text-muted-foreground focus:border-primary focus:outline-none px-3 py-2"
           type="password"
           placeholder="Mot de passe"
           autoComplete={mode === "signin" ? "current-password" : "new-password"}
@@ -79,7 +81,7 @@ function AuthPage() {
         />
         <button
           disabled={loading}
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-2.5 font-medium text-primary-foreground disabled:opacity-60"
+          className="flex w-full items-center justify-center gap-2 rounded-md bg-primary py-2.5 font-medium text-primary-foreground disabled:opacity-60"
         >
           {loading && <Loader2 className="h-4 w-4 animate-spin" />}
           {mode === "signin" ? "Se connecter" : "Créer mon compte"}

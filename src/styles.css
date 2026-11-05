@@ -2,32 +2,32 @@
 @source "../src";
 @import "tw-animate-css";
 
-@import "@fontsource/space-grotesk/400.css";
-@import "@fontsource/space-grotesk/500.css";
-@import "@fontsource/space-grotesk/700.css";
-@import "@fontsource/inter/400.css";
-@import "@fontsource/inter/500.css";
-@import "@fontsource/inter/600.css";
-@import "@fontsource/jetbrains-mono/400.css";
-@import "@fontsource/jetbrains-mono/700.css";
+@import "@fontsource/bricolage-grotesque/500.css";
+@import "@fontsource/bricolage-grotesque/700.css";
+@import "@fontsource/bricolage-grotesque/800.css";
+@import "@fontsource/ibm-plex-sans/400.css";
+@import "@fontsource/ibm-plex-sans/500.css";
+@import "@fontsource/ibm-plex-sans/600.css";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
 
 @custom-variant dark (&:is(.dark *));
 
 /*
- * AdsPilot Pro — Serene professional design system.
- * Light, breathable SaaS workspace with violet/indigo accents.
+ * RankPilot — "Radar" design system.
+ * Encre sombre (vert-noir), signal citron, typographie éditoriale. Pensé pour les données.
  */
 
 @theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 3px);
+  --radius-md: calc(var(--radius) - 1px);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-xl: calc(var(--radius) + 3px);
+  --radius-2xl: calc(var(--radius) + 6px);
 
-  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -60,66 +60,41 @@
 }
 
 :root {
-  --radius: 0.875rem;
+  --radius: 0.5rem;
 
-  /* Base — calm slate on a white canvas */
-  --background: oklch(0.984 0.003 247.858);
-  --foreground: oklch(0.208 0.042 265.638);
-  --surface: oklch(1 0 0);
-  --surface-2: oklch(0.965 0.007 247.858);
+  --background: #0a0e0d;
+  --foreground: #e8efe9;
+  --surface: #101614;
+  --surface-2: #161e1b;
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.208 0.042 265.638);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.208 0.042 265.638);
+  --card: #101614;
+  --card-foreground: #e8efe9;
+  --popover: #101614;
+  --popover-foreground: #e8efe9;
 
-  /* Brand */
-  --primary: oklch(0.57 0.24 278);
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.955 0.008 247.858);
-  --secondary-foreground: oklch(0.208 0.042 265.638);
+  --primary: #c6f432;
+  --primary-foreground: #0a0e0d;
+  --secondary: #1a2420;
+  --secondary-foreground: #e8efe9;
 
-  --muted: oklch(0.955 0.008 247.858);
-  --muted-foreground: oklch(0.55 0.04 257.417);
+  --muted: #161e1b;
+  --muted-foreground: #8a9a92;
+  --accent: #1f2b26;
+  --accent-foreground: #e8efe9;
 
-  --accent: oklch(0.57 0.24 278);
-  --accent-foreground: oklch(1 0 0);
+  --success: #3ddc97;
+  --success-foreground: #0a0e0d;
+  --warning: #ffb547;
+  --warning-foreground: #0a0e0d;
+  --danger: #ff5c5c;
+  --danger-foreground: #0a0e0d;
+  --destructive: #ff5c5c;
+  --destructive-foreground: #0a0e0d;
 
-  --success: oklch(0.696 0.17 162.48);
-  --success-foreground: oklch(1 0 0);
-  --warning: oklch(0.769 0.15 74.228);
-  --warning-foreground: oklch(0.208 0.042 265.638);
-  --danger: oklch(0.637 0.233 25.331);
-  --danger-foreground: oklch(1 0 0);
-  --destructive: oklch(0.637 0.233 25.331);
-  --destructive-foreground: oklch(1 0 0);
-
-  --border: oklch(0.928 0.006 264.531);
-  --border-strong: oklch(0.82 0.03 255.3);
-  --input: oklch(0.928 0.006 264.531);
-
-  --ring: oklch(0.57 0.24 278);
-
-  /* Effects */
-  --grad-primary: linear-gradient(135deg, oklch(0.57 0.24 278), oklch(0.58 0.22 255));
-  --grad-cockpit:
-    radial-gradient(
-      1000px 500px at 10% -5%,
-      color-mix(in oklab, var(--color-primary) 8%, transparent),
-      transparent
-    ),
-    radial-gradient(
-      900px 500px at 100% 0%,
-      color-mix(in oklab, var(--color-success) 6%, transparent),
-      transparent
-    );
-  --shadow-glow: 0 10px 30px -8px color-mix(in oklab, var(--color-primary) 20%, transparent);
-}
-
-.dark {
-  /* Keep light theme even in dark mode for this build */
-  --background: oklch(0.984 0.003 247.858);
-  --foreground: oklch(0.208 0.042 265.638);
+  --border: #24312c;
+  --border-strong: #35453e;
+  --input: #24312c;
+  --ring: #c6f432;
 }
 
 @layer base {
@@ -132,67 +107,39 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
-  }
-  body {
-    background-image: var(--grad-cockpit);
-    background-attachment: fixed;
+    color-scheme: dark;
   }
   h1,
   h2,
   h3,
   h4 {
     font-family: var(--font-display);
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
+  }
+  ::selection {
+    background: var(--primary);
+    color: var(--primary-foreground);
   }
 }
 
 @utility font-display {
   font-family: var(--font-display);
 }
-@utility font-mono-data {
+@utility font-data {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
 }
 
-@utility card-cockpit {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  box-shadow:
-    0 1px 3px 0 rgb(15 23 42 / 0.03),
-    0 1px 2px -1px rgb(15 23 42 / 0.03);
+/* Quadrillage discret façon écran radar */
+@utility bg-grid {
+  background-image:
+    linear-gradient(to right, rgb(198 244 50 / 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(198 244 50 / 0.045) 1px, transparent 1px);
+  background-size: 44px 44px;
 }
 
-@utility text-gradient-primary {
-  background-image: var(--grad-primary);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-@utility btn-hero {
-  background-image: var(--grad-primary);
-  color: var(--color-primary-foreground);
-  box-shadow: var(--shadow-glow);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-  &:hover {
-    transform: translateY(-1px);
+@keyframes sweep {
+  to {
+    transform: rotate(360deg);
   }
-}
-
-@utility chip-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.275rem 0.625rem;
-  border-radius: 999px;
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  background-color: color-mix(in oklab, var(--color-primary) 10%, transparent);
-  border: 1px solid color-mix(in oklab, var(--color-primary) 18%, transparent);
-  color: var(--color-primary);
 }
