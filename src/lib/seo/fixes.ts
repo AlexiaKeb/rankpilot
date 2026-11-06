@@ -407,6 +407,56 @@ export function buildFixes(input: FixInput, maxPerKind = 25): Fix[] {
   return out;
 }
 
+const csvCell = (v: string) => `"${v.replace(/"/g, '""')}"`;
+
+/** Export tableur : une ligne par correction (UTF-8 avec BOM pour Excel). */
+export function fixesToCsv(fixes: Fix[]): string {
+  const rows = fixes.map((f) =>
+    [FIX_META[f.kind].title, f.label, f.current ?? "", f.suggested, FIX_META[f.kind].where]
+      .map(csvCell)
+      .join(","),
+  );
+  return (
+    "\ufeff" +
+    [
+      ["Type", "Page", "Actuel", "Suggestion", "Où l'appliquer"].map(csvCell).join(","),
+      ...rows,
+    ].join("\n")
+  );
+}
+
+/** Brief à transmettre à un développeur ou un prestataire, au format Markdown. */
+export function fixesToMarkdown(fixes: Fix[], siteName: string): string {
+  const out = [
+    `# Corrections SEO — ${siteName}`,
+    "",
+    `${fixes.length} correction(s) à appliquer. Suggestions générées à partir du contenu des pages : à relire avant publication.`,
+    "",
+  ];
+  for (const kind of Object.keys(FIX_META) as FixKind[]) {
+    const list = fixes.filter((f) => f.kind === kind);
+    if (!list.length) continue;
+    out.push(
+      `## ${FIX_META[kind].title} (${list.length})`,
+      "",
+      `Où l'appliquer : ${FIX_META[kind].where}`,
+      "",
+    );
+    for (const f of list) {
+      out.push(`### ${f.label}`);
+      if (f.current) out.push(`- Actuel : ${f.current.replace(/\n/g, " / ")}`);
+      out.push(
+        f.format === "texte"
+          ? `- À mettre : ${f.suggested.replace(/\n/g, " / ")}`
+          : `- À mettre :\n\n\`\`\`${f.format === "xml" ? "xml" : "html"}\n${f.suggested.trim()}\n\`\`\``,
+      );
+      if (f.note) out.push(`- Note : ${f.note}`);
+      out.push("");
+    }
+  }
+  return out.join("\n");
+}
+
 export const fixesCountLabel = (n: number) =>
   `${n} correction${n > 1 ? "s" : ""} prête${n > 1 ? "s" : ""}`;
 export { fold };

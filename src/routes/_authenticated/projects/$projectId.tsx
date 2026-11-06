@@ -574,7 +574,13 @@ function ProjectPage() {
             </>
           )}
 
-          {tab === "fixes" && <FixesPanel fixes={fixes} missingData={fixesMissingData} />}
+          {tab === "fixes" && (
+            <FixesPanel
+              fixes={fixes}
+              missingData={fixesMissingData}
+              siteName={project.data?.name ?? ""}
+            />
+          )}
 
           {tab === "llms" && (
             <>

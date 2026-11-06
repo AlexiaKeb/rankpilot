@@ -5,6 +5,8 @@ import {
   buildFixes,
   buildSitemap,
   cutAtWord,
+  fixesToCsv,
+  fixesToMarkdown,
   humanizeSlug,
   suggestMeta,
   suggestTitle,
@@ -138,5 +140,39 @@ describe("buildFixes", () => {
         robotsFound: true,
       }),
     ).toEqual([]);
+  });
+});
+
+describe("exports", () => {
+  const fixes = [
+    {
+      id: "a",
+      kind: "title" as const,
+      url: "https://x.fr/a",
+      label: "/a",
+      current: 'Ancien "titre"',
+      suggested: "Nouveau titre | X",
+      format: "texte" as const,
+    },
+    {
+      id: "b",
+      kind: "canonical" as const,
+      url: "https://x.fr/a",
+      label: "/a",
+      suggested: '<link rel="canonical" href="https://x.fr/a">',
+      format: "html" as const,
+    },
+  ];
+  it("CSV échappe les guillemets et commence par un BOM", () => {
+    const c = fixesToCsv(fixes);
+    expect(c.charCodeAt(0)).toBe(0xfeff);
+    expect(c).toContain('"Ancien ""titre"""');
+    expect(c.split("\n")).toHaveLength(3);
+  });
+  it("brief Markdown regroupé par type", () => {
+    const m = fixesToMarkdown(fixes, "Mon site");
+    expect(m).toContain("# Corrections SEO — Mon site");
+    expect(m).toContain("## Titles à réécrire (1)");
+    expect(m).toContain("```html");
   });
 });

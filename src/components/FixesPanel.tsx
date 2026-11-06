@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { Check, Copy, Download, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { improveSnippet } from "@/lib/seo/ai.functions";
-import { FIX_META, type Fix, type FixKind } from "@/lib/seo/fixes";
+import { FIX_META, fixesToCsv, fixesToMarkdown, type Fix, type FixKind } from "@/lib/seo/fixes";
 
 const KIND_ORDER: FixKind[] = [
   "title",
@@ -132,7 +132,15 @@ function FixCard({ fix }: { fix: Fix }) {
   );
 }
 
-export function FixesPanel({ fixes, missingData }: { fixes: Fix[]; missingData: boolean }) {
+export function FixesPanel({
+  fixes,
+  missingData,
+  siteName,
+}: {
+  fixes: Fix[];
+  missingData: boolean;
+  siteName: string;
+}) {
   const [kind, setKind] = useState<FixKind | "all">("all");
   const counts = useMemo(() => {
     const m = new Map<FixKind, number>();
@@ -154,6 +162,24 @@ export function FixesPanel({ fixes, missingData }: { fixes: Fix[]; missingData: 
           Cet audit date d'avant cette fonction : relancez l'audit pour obtenir aussi les meta
           descriptions et textes alternatifs suggérés.
         </p>
+      )}
+      {fixes.length > 0 && (
+        <div className="mb-4 flex flex-wrap gap-2">
+          <button
+            onClick={() => download("corrections-seo.csv", fixesToCsv(fixes), "text/csv")}
+            className="flex items-center gap-1 rounded-md border px-3 py-2 text-sm hover:bg-accent"
+          >
+            <Download className="h-4 w-4" /> Exporter en CSV
+          </button>
+          <button
+            onClick={() =>
+              download("corrections-seo.md", fixesToMarkdown(fixes, siteName), "text/markdown")
+            }
+            className="flex items-center gap-1 rounded-md border px-3 py-2 text-sm hover:bg-accent"
+          >
+            <Download className="h-4 w-4" /> Brief pour un développeur (.md)
+          </button>
+        </div>
       )}
       {fixes.length === 0 && (
         <p className="rounded-lg border bg-card p-6 text-success">
