@@ -77,6 +77,20 @@ export type SeoOauthState = {
   created_at: string;
 };
 
+export type SeoArticle = {
+  id: string;
+  user_id: string;
+  project_id: string | null;
+  title: string;
+  keyword: string;
+  meta_description: string;
+  brief: Json | null;
+  content: string;
+  status: "idee" | "brouillon" | "publie";
+  created_at: string;
+  updated_at: string;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -97,6 +111,7 @@ export type Database = {
         SeoOauthState,
         Pick<SeoOauthState, "nonce" | "user_id" | "project_id">
       >;
+      seo_articles: Table<SeoArticle, Pick<SeoArticle, "user_id"> & Partial<SeoArticle>>;
       seo_keywords: Table<
         SeoKeyword,
         Pick<SeoKeyword, "user_id" | "keyword"> & Partial<SeoKeyword>
@@ -108,7 +123,7 @@ export type Database = {
       >;
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: { consume_ai_call: { Args: { _user: string; _limit: number }; Returns: boolean } };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };

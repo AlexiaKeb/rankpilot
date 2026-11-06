@@ -41,7 +41,9 @@ export function ScoreRing({ score, size = 168 }: { score: number; size?: number 
         >
           {score}
         </span>
-        <span className="font-data mt-1 text-[11px] uppercase tracking-widest text-muted-foreground">
+        <span
+          className={`font-data mt-1 uppercase text-muted-foreground ${size < 120 ? "text-[8px] tracking-wider" : "text-[11px] tracking-widest"}`}
+        >
           {tone.label}
         </span>
       </div>

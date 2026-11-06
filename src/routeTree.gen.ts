@@ -16,6 +16,7 @@ import { Route as OutilsRouteImport } from './routes/outils'
 import { Route as AuthenticatedDiagnosticsRouteImport } from './routes/_authenticated/diagnostics'
 import { Route as AuthenticatedKeywordsRouteImport } from './routes/_authenticated/keywords'
 import { Route as AuthenticatedOptimizerRouteImport } from './routes/_authenticated/optimizer'
+import { Route as AuthenticatedWriterRouteImport } from './routes/_authenticated/writer'
 import { Route as AuthenticatedProjectsIndexRouteImport } from './routes/_authenticated/projects/index'
 import { Route as AuthenticatedProjectsProjectIdRouteImport } from './routes/_authenticated/projects/$projectId'
 import { Route as ApiGscCallbackRouteImport } from './routes/api/gsc/callback'
@@ -55,6 +56,11 @@ const AuthenticatedOptimizerRoute = AuthenticatedOptimizerRouteImport.update({
   path: '/optimizer',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedWriterRoute = AuthenticatedWriterRouteImport.update({
+  id: '/writer',
+  path: '/writer',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedProjectsIndexRoute =
   AuthenticatedProjectsIndexRouteImport.update({
     id: '/projects/',
@@ -80,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/diagnostics': typeof AuthenticatedDiagnosticsRoute
   '/keywords': typeof AuthenticatedKeywordsRoute
   '/optimizer': typeof AuthenticatedOptimizerRoute
+  '/writer': typeof AuthenticatedWriterRoute
   '/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
   '/api/gsc/callback': typeof ApiGscCallbackRoute
   '/projects/': typeof AuthenticatedProjectsIndexRoute
@@ -91,6 +98,7 @@ export interface FileRoutesByTo {
   '/diagnostics': typeof AuthenticatedDiagnosticsRoute
   '/keywords': typeof AuthenticatedKeywordsRoute
   '/optimizer': typeof AuthenticatedOptimizerRoute
+  '/writer': typeof AuthenticatedWriterRoute
   '/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
   '/api/gsc/callback': typeof ApiGscCallbackRoute
   '/projects': typeof AuthenticatedProjectsIndexRoute
@@ -104,6 +112,7 @@ export interface FileRoutesById {
   '/_authenticated/diagnostics': typeof AuthenticatedDiagnosticsRoute
   '/_authenticated/keywords': typeof AuthenticatedKeywordsRoute
   '/_authenticated/optimizer': typeof AuthenticatedOptimizerRoute
+  '/_authenticated/writer': typeof AuthenticatedWriterRoute
   '/_authenticated/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
   '/api/gsc/callback': typeof ApiGscCallbackRoute
   '/_authenticated/projects/': typeof AuthenticatedProjectsIndexRoute
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/diagnostics'
     | '/keywords'
     | '/optimizer'
+    | '/writer'
     | '/projects/$projectId'
     | '/api/gsc/callback'
     | '/projects/'
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/diagnostics'
     | '/keywords'
     | '/optimizer'
+    | '/writer'
     | '/projects/$projectId'
     | '/api/gsc/callback'
     | '/projects'
@@ -140,6 +151,7 @@ export interface FileRouteTypes {
     | '/_authenticated/diagnostics'
     | '/_authenticated/keywords'
     | '/_authenticated/optimizer'
+    | '/_authenticated/writer'
     | '/_authenticated/projects/$projectId'
     | '/api/gsc/callback'
     | '/_authenticated/projects/'
@@ -204,6 +216,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOptimizerRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/writer': {
+      id: '/_authenticated/writer'
+      path: '/writer'
+      fullPath: '/writer'
+      preLoaderRoute: typeof AuthenticatedWriterRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/projects/': {
       id: '/_authenticated/projects/'
       path: '/projects'
@@ -232,6 +251,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDiagnosticsRoute: typeof AuthenticatedDiagnosticsRoute
   AuthenticatedKeywordsRoute: typeof AuthenticatedKeywordsRoute
   AuthenticatedOptimizerRoute: typeof AuthenticatedOptimizerRoute
+  AuthenticatedWriterRoute: typeof AuthenticatedWriterRoute
   AuthenticatedProjectsProjectIdRoute: typeof AuthenticatedProjectsProjectIdRoute
   AuthenticatedProjectsIndexRoute: typeof AuthenticatedProjectsIndexRoute
 }
@@ -240,6 +260,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDiagnosticsRoute: AuthenticatedDiagnosticsRoute,
   AuthenticatedKeywordsRoute: AuthenticatedKeywordsRoute,
   AuthenticatedOptimizerRoute: AuthenticatedOptimizerRoute,
+  AuthenticatedWriterRoute: AuthenticatedWriterRoute,
   AuthenticatedProjectsProjectIdRoute: AuthenticatedProjectsProjectIdRoute,
   AuthenticatedProjectsIndexRoute: AuthenticatedProjectsIndexRoute,
 }

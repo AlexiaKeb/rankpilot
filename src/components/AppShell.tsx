@@ -1,11 +1,20 @@
 import { Link } from "@tanstack/react-router";
-import { Activity, FolderKanban, LogOut, ScanSearch, TextSearch, Wrench } from "lucide-react";
+import {
+  Activity,
+  FolderKanban,
+  LogOut,
+  PenLine,
+  ScanSearch,
+  TextSearch,
+  Wrench,
+} from "lucide-react";
 import type { ReactNode } from "react";
 import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
 
 const NAV = [
   { to: "/projects", label: "Projets", icon: FolderKanban },
+  { to: "/writer", label: "Rédaction", icon: PenLine },
   { to: "/optimizer", label: "Optimiseur de page", icon: ScanSearch },
   { to: "/keywords", label: "Mots-clés", icon: TextSearch },
   { to: "/diagnostics", label: "Diagnostics", icon: Activity },
