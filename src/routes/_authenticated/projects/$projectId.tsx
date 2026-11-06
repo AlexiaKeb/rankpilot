@@ -14,6 +14,7 @@ import {
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { GscPanel } from "@/components/GscPanel";
+import { WeeklyPanel } from "@/components/WeeklyPanel";
 import { ScoreRing } from "@/components/ScoreRing";
 import { supabase } from "@/integrations/supabase/client";
 import { crawlStep, startAudit } from "@/lib/seo/audit.functions";
@@ -66,10 +67,10 @@ function ProjectPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [q, setQ] = useState("");
   const [summary, setSummary] = useState("");
-  const [view, setView] = useState<"audit" | "gsc">(
+  const [view, setView] = useState<"week" | "audit" | "gsc">(
     typeof window !== "undefined" && new URLSearchParams(window.location.search).has("gsc")
       ? "gsc"
-      : "audit",
+      : "week",
   );
 
   const project = useQuery({
@@ -250,7 +251,7 @@ function ProjectPage() {
           </p>
           <h1 className="font-display text-4xl font-extrabold">{project.data?.name}</h1>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <select
             value={maxPages}
             onChange={(e) => setMaxPages(Number(e.target.value))}
@@ -278,9 +279,10 @@ function ProjectPage() {
         </div>
       </div>
 
-      <div className="mb-6 flex gap-2">
+      <div className="mb-6 flex flex-wrap gap-2">
         {(
           [
+            ["week", "Cette semaine"],
             ["audit", "Audit technique"],
             ["gsc", "Search Console"],
           ] as const
@@ -294,6 +296,8 @@ function ProjectPage() {
           </button>
         ))}
       </div>
+
+      {view === "week" && <WeeklyPanel projectId={projectId} goTo={setView} />}
 
       {view === "gsc" && project.data && (
         <GscPanel projectId={projectId} gscSite={project.data.gsc_site} />
@@ -336,7 +340,7 @@ function ProjectPage() {
             </div>
           </div>
 
-          <div className="mb-5 flex gap-1 border-b">
+          <div className="mb-5 flex gap-1 overflow-x-auto border-b">
             {(
               [
                 ["plan", "Plan d'action"],
@@ -349,7 +353,7 @@ function ProjectPage() {
               <button
                 key={k}
                 onClick={() => setTab(k)}
-                className={`-mb-px border-b-2 px-4 py-2 text-sm font-medium ${tab === k ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"}`}
+                className={`-mb-px shrink-0 whitespace-nowrap border-b-2 px-4 py-2 text-sm font-medium ${tab === k ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"}`}
               >
                 {l}
               </button>

@@ -332,7 +332,7 @@ export function GscPanel({ projectId, gscSite }: { projectId: string; gscSite: s
             </div>
           )}
 
-          <div className="mb-3 flex gap-1 border-b">
+          <div className="mb-3 flex gap-1 overflow-x-auto border-b">
             {(
               [
                 ["queries", "Requêtes"],
@@ -342,7 +342,7 @@ export function GscPanel({ projectId, gscSite }: { projectId: string; gscSite: s
               <button
                 key={k}
                 onClick={() => setSection(k)}
-                className={`-mb-px border-b-2 px-4 py-2 text-sm font-medium ${section === k ? "border-primary" : "border-transparent text-muted-foreground"}`}
+                className={`-mb-px shrink-0 whitespace-nowrap border-b-2 px-4 py-2 text-sm font-medium ${section === k ? "border-primary" : "border-transparent text-muted-foreground"}`}
               >
                 {l}
               </button>

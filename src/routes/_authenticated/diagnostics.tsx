@@ -336,7 +336,7 @@ function Diagnostics() {
       <PageHeader eyebrow="Diagnostics" title="Vitesse, redirections, moteurs IA">
         Trois contrôles rapides sur n'importe quelle URL de votre site.
       </PageHeader>
-      <div className="mb-6 flex gap-1 border-b">
+      <div className="mb-6 flex gap-1 overflow-x-auto border-b">
         {(
           [
             ["speed", "Vitesse & Core Web Vitals"],
@@ -347,7 +347,7 @@ function Diagnostics() {
           <button
             key={k}
             onClick={() => setTab(k)}
-            className={`-mb-px border-b-2 px-4 py-2 text-sm font-medium ${tab === k ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"}`}
+            className={`-mb-px shrink-0 whitespace-nowrap border-b-2 px-4 py-2 text-sm font-medium ${tab === k ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"}`}
           >
             {l}
           </button>

@@ -19,12 +19,12 @@ export function AppShell({ children }: { children: ReactNode }) {
         <Link to="/projects">
           <Logo />
         </Link>
-        <nav className="flex flex-wrap gap-1 md:flex-col">
+        <nav className="order-3 flex w-full gap-1 overflow-x-auto whitespace-nowrap md:order-none md:w-auto md:flex-col md:overflow-visible">
           {NAV.map((n) => (
             <Link
               key={n.to}
               to={n.to}
-              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground transition hover:bg-accent hover:text-foreground"
+              className="flex shrink-0 items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground transition hover:bg-accent hover:text-foreground"
               activeProps={{ className: "bg-accent text-foreground" }}
             >
               <n.icon className="h-4 w-4" /> {n.label}
