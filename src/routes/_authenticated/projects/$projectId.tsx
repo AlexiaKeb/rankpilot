@@ -19,7 +19,9 @@ import { ScoreRing } from "@/components/ScoreRing";
 import { supabase } from "@/integrations/supabase/client";
 import { crawlStep, startAudit } from "@/lib/seo/audit.functions";
 import { RULES, type Severity } from "@/lib/seo/rules";
+import { FixesPanel } from "@/components/FixesPanel";
 import { buildLlmsTxt } from "@/lib/seo/ai";
+import { buildFixes, type PageLite } from "@/lib/seo/fixes";
 import { suggestInternalLinks } from "@/lib/seo/linking";
 
 export const Route = createFileRoute("/_authenticated/projects/$projectId")({
@@ -54,7 +56,7 @@ function Stat({ label, value, hint }: { label: string; value: number | string; h
   );
 }
 
-type Tab = "plan" | "pages" | "links" | "llms" | "history";
+type Tab = "plan" | "fixes" | "pages" | "links" | "llms" | "history";
 
 function ProjectPage() {
   const { projectId } = Route.useParams();
@@ -117,14 +119,14 @@ function ProjectPage() {
       ).data ?? [],
   });
   const pages = useQuery({
-    enabled: done && (tab === "pages" || tab === "links" || tab === "llms"),
+    enabled: done,
     queryKey: ["seo_pages", audit?.id],
     queryFn: async () =>
       (
         await supabase
           .from("seo_audit_pages")
           .select(
-            "id,url,status_code,title,meta_description,word_count,depth,response_ms,noindex,internal_links,data",
+            "id,url,status_code,title,meta_description,word_count,depth,response_ms,noindex,canonical,internal_links,data",
           )
           .eq("audit_id", audit!.id)
           .eq("crawled", true)
@@ -134,6 +136,22 @@ function ProjectPage() {
   });
 
   const origin = project.data ? `https://${project.data.domain}` : "";
+  const fixes = useMemo(() => {
+    if (!pages.data || !issues.data || !project.data) return [];
+    const info = (audit?.site_info ?? {}) as { robots_found?: boolean; sitemap_found?: boolean };
+    return buildFixes({
+      issues: issues.data.map((i) => ({ code: i.code, url: i.url })),
+      pages: pages.data as unknown as PageLite[],
+      siteName: project.data.name,
+      origin: `https://${project.data.domain}`,
+      robotsFound: !!info.robots_found,
+      sitemapFound: !!info.sitemap_found,
+    });
+  }, [pages.data, issues.data, project.data, audit]);
+  const fixesMissingData =
+    !!pages.data?.length &&
+    !pages.data.some((p) => (p.data as { excerpt?: string } | null)?.excerpt !== undefined);
+
   const linkIdeas = useMemo(
     () =>
       suggestInternalLinks(
@@ -344,6 +362,7 @@ function ProjectPage() {
             {(
               [
                 ["plan", "Plan d'action"],
+                ["fixes", `Corrections (${fixes.length})`],
                 ["pages", "Pages"],
                 ["links", "Maillage"],
                 ["llms", "llms.txt"],
@@ -554,6 +573,8 @@ function ProjectPage() {
               </div>
             </>
           )}
+
+          {tab === "fixes" && <FixesPanel fixes={fixes} missingData={fixesMissingData} />}
 
           {tab === "llms" && (
             <>

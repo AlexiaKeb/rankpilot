@@ -34,6 +34,8 @@ export interface PageAnalysis {
   jsonLdTypes: string[];
   jsonLdInvalid: number;
   mixedContent: boolean;
+  excerpt: string; // début du texte visible : base des meta descriptions suggérées
+  imgsNoAlt: string[]; // adresses des images sans attribut alt (10 max)
   issues: string[]; // codes de règles propres à la page
 }
 
@@ -61,6 +63,8 @@ export function analyzePage(page: FetchedPage): PageAnalysis {
     jsonLdTypes: [],
     jsonLdInvalid: 0,
     mixedContent: false,
+    excerpt: "",
+    imgsNoAlt: [],
     issues: [],
   };
   const issues = new Set<string>();
@@ -124,6 +128,11 @@ export function analyzePage(page: FetchedPage): PageAnalysis {
   const imgs = root.querySelectorAll("img");
   out.imagesTotal = imgs.length;
   out.imagesMissingAlt = imgs.filter((i) => i.getAttribute("alt") === undefined).length;
+  out.imgsNoAlt = imgs
+    .filter((i) => i.getAttribute("alt") === undefined)
+    .map((i) => i.getAttribute("src") ?? "")
+    .filter(Boolean)
+    .slice(0, 10);
   if (out.imagesMissingAlt > 0) issues.add("img_alt_missing");
 
   // Texte visible approximatif (sans scripts/styles/nav/footer)
@@ -133,6 +142,7 @@ export function analyzePage(page: FetchedPage): PageAnalysis {
       el.remove();
     out.wordCount = txt(body.text).split(" ").filter(Boolean).length;
   }
+  out.excerpt = txt(body?.text).slice(0, 400);
   if (out.wordCount < THRESHOLDS.thinContentWords) issues.add("thin_content");
 
   // JSON-LD
