@@ -28,7 +28,10 @@ import {
   suggestIdeas,
   writeDraft,
 } from "@/lib/seo/ai.functions";
-import { articleToPage, mdToHtml } from "@/lib/seo/markdown";
+import { RichEditor } from "@/components/RichEditor";
+import { mdToHtml } from "@/lib/seo/markdown";
+import { countTodos, htmlToPage, normalizeContent } from "@/lib/seo/richtext";
+import { htmlToMarkdown } from "@/lib/seo/richtext-export";
 import { analyzeOnPage } from "@/lib/seo/optimizer";
 import { BriefSchema, type Brief, type Idea } from "@/lib/seo/writing";
 
@@ -109,7 +112,7 @@ function Writer() {
   const draftM = useMutation({
     mutationFn: () => writeDraft({ data: { keyword, brief: brief!, notes: undefined } }),
     onSuccess: (r) => {
-      setContent(r.markdown);
+      setContent(mdToHtml(r.markdown));
       setArticleId(null);
       setTab("draft");
       toast.success("Brouillon prêt : complétez les passages entre crochets.");
@@ -169,15 +172,13 @@ function Writer() {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-|-$/g, "");
     return analyzeOnPage(
-      articleToPage({ title, meta, markdown: content }),
+      htmlToPage({ title, meta, html: content }),
       `https://${project?.domain ?? "exemple.fr"}/${slug}`,
       keyword,
     );
   }, [content, title, meta, keyword, brief, project]);
   const todo = result?.checks.filter((c) => c.status !== "pass").slice(0, 6) ?? [];
-  const placeholders = (
-    content.match(/\[(VOTRE EXPÉRIENCE|VOTRE DONNÉE|À VÉRIFIER)[^\]]*\]/g) ?? []
-  ).length;
+  const placeholders = countTodos(content);
 
   const copy = (what: string, text: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -187,7 +188,9 @@ function Writer() {
   };
   const download = () => {
     const a = document.createElement("a");
-    a.href = URL.createObjectURL(new Blob([content], { type: "text/markdown;charset=utf-8" }));
+    a.href = URL.createObjectURL(
+      new Blob([htmlToMarkdown(content)], { type: "text/markdown;charset=utf-8" }),
+    );
     a.download = `${(brief?.slug || keyword || "article").replace(/\s+/g, "-")}.md`;
     a.click();
   };
@@ -201,7 +204,7 @@ function Writer() {
     setTitle(a.title);
     setKeyword(a.keyword);
     setMeta(a.meta_description);
-    setContent(a.content);
+    setContent(normalizeContent(a.content));
     const b = BriefSchema.safeParse(a.brief);
     setBrief(b.success ? b.data : null);
     if (a.project_id) setProjectId(a.project_id);
@@ -515,7 +518,7 @@ function Writer() {
               noter.
             </p>
           )}
-          <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
             <div className="space-y-3">
               <input
                 className={input}
@@ -538,12 +541,10 @@ function Writer() {
                   onChange={(e) => setMeta(e.target.value)}
                 />
               </label>
-              <textarea
-                rows={22}
-                className={`${input} font-data text-[13px] leading-relaxed`}
-                placeholder="# Titre de l'article&#10;&#10;Votre texte en Markdown…"
+              <RichEditor
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
+                onChange={setContent}
+                placeholder="Écrivez votre article ici, ou générez un brouillon depuis un brief…"
               />
               <div className="flex flex-wrap gap-2">
                 <button
@@ -553,11 +554,11 @@ function Writer() {
                 >
                   <Save className="h-4 w-4" /> Enregistrer
                 </button>
-                <button onClick={() => copy("md", content)} className={ghost}>
+                <button onClick={() => copy("md", htmlToMarkdown(content))} className={ghost}>
                   {copied === "md" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}{" "}
                   Markdown
                 </button>
-                <button onClick={() => copy("html", mdToHtml(content))} className={ghost}>
+                <button onClick={() => copy("html", content)} className={ghost}>
                   {copied === "html" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}{" "}
                   HTML
                 </button>
